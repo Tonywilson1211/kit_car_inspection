@@ -2,21 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>NicheCom Equipment & Car Check</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 
     <style>
-        :root {
-            --primary: #333;
-            --border: #000;
-        }
+        :root { --primary: #333; }
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             margin: 0;
             padding: 20px;
+            overscroll-behavior: none; 
         }
         .container {
             max-width: 1000px;
@@ -26,12 +24,8 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         
-        /* TABS STYLING */
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #333;
-        }
+        /* TABS */
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #333; }
         .tab-btn {
             padding: 15px 30px;
             background: #ddd;
@@ -43,113 +37,85 @@
             border-top-left-radius: 5px;
             border-top-right-radius: 5px;
         }
-        .tab-btn.active {
-            background: #333;
-            color: white;
-        }
-        .tab-content {
-            display: none;
-            padding: 20px 0;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-btn.active { background: #333; color: white; }
+        .tab-content { display: none; padding: 20px 0; }
+        .tab-content.active { display: block; }
 
-        /* FORM STYLING (Carbon Copy Look) */
+        /* GENERAL FORM */
         h2, h3 { margin-top: 0; border-bottom: 2px solid black; padding-bottom: 5px; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; vertical-align: middle; }
         th { background-color: #eee; }
         
-        input[type="text"], input[type="date"], input[type="number"], select, textarea {
-            width: 95%;
-            padding: 5px;
-            border: none;
-            background: transparent;
-            font-family: inherit;
+        /* INPUT STYLING */
+        input[type="text"], input[type="number"], input[type="date"], select, textarea {
+            width: 95%; padding: 5px; border: none; background: transparent; font-family: inherit; font-size: 14px;
         }
-        /* Make inputs look like fillable areas */
-        input:focus, textarea:focus {
-            background-color: #eef;
-            outline: none;
-        }
-
-        /* SPECIFIC LAYOUTS */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        input:focus, textarea:focus { background-color: #eef; outline: none; }
         
+        /* SPECIFIC STYLES */
+        .uppercase { text-transform: uppercase; }
+        
+        /* RESTORED: Box Borders for bottom section */
+        .bordered-input { 
+            border: 1px solid #000 !important; 
+            background: #fff; 
+            padding: 8px;
+            border-radius: 3px; 
+        }
+        
+        /* TABLE COLUMN SIZING */
+        .col-qty { width: 50px; text-align: center; }
+        .col-cond { width: 60px; text-align: center; }
+        .col-radio { width: 40px; text-align: center; }
+        
+        /* LAYOUTS */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-header { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;}
+
+        /* RADIO ALIGNMENT */
+        .radio-group { display: flex; align-items: center; gap: 15px; }
+        .radio-group label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
         /* CAR DIAGRAM */
         .car-canvas-container {
             position: relative;
             width: 100%;
-            height: 400px; /* Adjust based on your image aspect ratio */
+            height: 400px; 
             border: 1px solid black;
             background: url('images/car-diagram.png') no-repeat center center;
             background-size: contain;
             margin-bottom: 20px;
+            touch-action: none; 
         }
-        #carCanvas {
-            width: 100%;
-            height: 100%;
-            cursor: crosshair;
-        }
+        #carCanvas { width: 100%; height: 100%; }
 
         /* SIGNATURES */
         .sig-wrapper {
             border: 1px dashed #333;
             background: #fffff0;
             margin-top: 5px;
-            height: 100px;
+            height: 120px;
             position: relative;
+            touch-action: none; 
         }
-        canvas.sig-pad { width: 100%; height: 100%; }
+        canvas.sig-pad { width: 100%; height: 100%; display: block; }
         .clear-btn {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            font-size: 10px;
-            background: #eee;
-            border: 1px solid #999;
-            padding: 2px 5px;
-            cursor: pointer;
+            position: absolute; bottom: 5px; right: 5px;
+            font-size: 12px; background: #eee; border: 1px solid #999;
+            padding: 4px 8px; cursor: pointer; z-index: 10;
         }
 
-        /* ACTION BUTTONS */
+        /* BUTTONS */
         .actions {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 999;
+            position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 999;
         }
         .action-btn {
-            padding: 15px 25px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            cursor: pointer;
+            padding: 15px 25px; background: #007bff; color: white; border: none;
+            border-radius: 50px; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
-        .action-btn.reset { background: #dc3545; }
 
-        @media print {
-            .actions, .tabs { display: none; }
-            .tab-content { display: block !important; } /* Print all tabs */
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; max-width: 100%; }
-        }
+        @media print { .actions, .tabs { display: none; } }
     </style>
 </head>
 <body>
@@ -167,18 +133,14 @@
 
     <div id="kit" class="tab-content active">
         <h2>Kit Handover Checklist</h2>
+        <p style="background:#eee; padding:10px; border:1px solid #ccc; font-size:0.9em;">
+            <strong>Condition Guide:</strong> 1 = Perfect &nbsp;|&nbsp; 5 = Ruined
+        </p>
         <p><strong>Manager:</strong> <input type="text" style="width:200px; border-bottom:1px solid #000"></p>
 
         <h3>OFFICE KIT</h3>
         <table>
-            <tr>
-                <th width="30%">Item</th>
-                <th>Model/Type</th>
-                <th>Serial No.</th>
-                <th>Qty</th>
-                <th>Cond (1-5)</th>
-                <th>Notes</th>
-            </tr>
+            <tr><th width="30%">Item</th><th>Model/Type</th><th>Serial No.</th><th class="col-qty">Qty</th><th class="col-cond">Cond (1-5)</th><th>Notes</th></tr>
             <tr><td>iPad</td><td><input type="text"></td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Charger</td><td><input type="text"></td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Mobile Phone</td><td><input type="text"></td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
@@ -188,13 +150,7 @@
 
         <h3>FLOORPLAN / EPC KIT</h3>
         <table>
-            <tr>
-                <th width="30%">Item</th>
-                <th>Model/Type</th>
-                <th>Qty</th>
-                <th>Cond (1-5)</th>
-                <th>Notes</th>
-            </tr>
+            <tr><th width="30%">Item</th><th>Model/Type</th><th class="col-qty">Qty</th><th class="col-cond">Cond (1-5)</th><th>Notes</th></tr>
             <tr><td>Disto</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Folder/Clipboard</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Backing sheet</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
@@ -206,16 +162,10 @@
 
         <h3>PHOTOGRAPHY KIT</h3>
         <table>
-            <tr>
-                <th width="30%">Item</th>
-                <th>Model/Type</th>
-                <th>Qty</th>
-                <th>Cond (1-5)</th>
-                <th>Notes</th>
-            </tr>
-            <tr><td>Camera Body</td><td>D800/D750/D780</td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
+            <tr><th width="30%">Item</th><th>Model/Type</th><th class="col-qty">Qty</th><th class="col-cond">Cond (1-5)</th><th>Notes</th></tr>
+            <tr><td>Camera Body</td><td><input type="text" placeholder="e.g. Sony A7iv"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Batt & Charger</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
-            <tr><td>Wide Lens</td><td>14-24mm/16-35mm</td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
+            <tr><td>Wide Lens</td><td><input type="text" placeholder="e.g. 12-24mm"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>50mm Lens</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Zoom Lens</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Tripod & Head</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
@@ -224,12 +174,12 @@
             <tr><td>Rech. Batteries</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Cables/Reader</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>SD Cards</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
-            <tr><td>Camera Bag</td><td><input type="text"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
+            <tr><td>Camera Bag</td><td><input type="text" placeholder="e.g. Trolley/Backpack"></td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
         </table>
 
         <h3>MATTERPORT KIT</h3>
         <table>
-             <tr><th width="30%">Item</th><th>Qty</th><th>Cond (1-5)</th><th>Notes</th></tr>
+             <tr><th width="30%">Item</th><th class="col-qty">Qty</th><th class="col-cond">Cond (1-5)</th><th>Notes</th></tr>
              <tr><td>Matterport Camera</td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
              <tr><td>Pelicase</td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
              <tr><td>Tripod Head</td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
@@ -240,7 +190,7 @@
         
         <h3>ELEVATED KIT</h3>
         <table>
-            <tr><th width="30%">Item</th><th>Qty</th><th>Cond (1-5)</th><th>Notes</th></tr>
+            <tr><th width="30%">Item</th><th class="col-qty">Qty</th><th class="col-cond">Cond (1-5)</th><th>Notes</th></tr>
             <tr><td>PhotoMast</td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>Phone Mount</td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
             <tr><td>CamRanger</td><td><input type="number"></td><td><input type="number" min="1" max="5"></td><td><input type="text"></td></tr>
@@ -250,42 +200,42 @@
 
         <div class="grid-2">
             <div>
-                <p><strong>Manager Name:</strong> <input type="text"></p>
+                <p><strong>Manager Name:</strong> <input type="text" class="bordered-input"></p>
                 <div class="sig-wrapper">
                     <canvas id="sig-manager-kit" class="sig-pad"></canvas>
                     <button class="clear-btn" onclick="clearSig('sig-manager-kit')">Clear</button>
                 </div>
-                <p>Date: <input type="date"></p>
+                <p>Date: <input type="date" class="auto-date bordered-input"></p>
             </div>
             <div>
-                <p><strong>Photographer Name:</strong> <input type="text"></p>
+                <p><strong>Photographer Name:</strong> <input type="text" class="bordered-input"></p>
                 <div class="sig-wrapper">
                     <canvas id="sig-photo-kit" class="sig-pad"></canvas>
                     <button class="clear-btn" onclick="clearSig('sig-photo-kit')">Clear</button>
                 </div>
-                <p>Date: <input type="date"></p>
+                <p>Date: <input type="date" class="auto-date bordered-input"></p>
             </div>
         </div>
-        <p><strong>Notes/Comments:</strong> <textarea rows="3" style="width:100%"></textarea></p>
+        
+        <p><strong>Notes/Comments:</strong> <textarea rows="3" class="bordered-input" style="width:95%"></textarea></p>
         <p>
-            Mileage form sent? <input type="checkbox"> 
-            Devices Unlocked? <input type="checkbox">
+            <label><input type="checkbox" style="width:auto"> Mileage form sent?</label> &nbsp;&nbsp;
+            <label><input type="checkbox" style="width:auto"> Devices Unlocked?</label>
         </p>
-        <p>Personal Contact: <input type="text"></p>
-        <p>Personal Email: <input type="text"></p>
+        <p>Personal Contact: <input type="text" class="bordered-input"></p>
+        <p>Personal Email: <input type="text" class="bordered-input"></p>
     </div>
 
     <div id="car" class="tab-content">
         <h2>Company Car Check Sheet</h2>
         
-        <div class="grid-3">
-            <div>Registration: <input type="text" style="border-bottom:1px solid #000"></div>
-            <div>Driver Name: <input type="text" style="border-bottom:1px solid #000"></div>
+        <div class="grid-header">
+            <div>Reg: <input type="text" class="uppercase" style="border-bottom:1px solid #000"></div>
+            <div>Driver: <input type="text" style="border-bottom:1px solid #000"></div>
             <div>Mileage: <input type="number" style="border-bottom:1px solid #000"></div>
-            <div>Date: <input type="date" style="border-bottom:1px solid #000"></div>
-            <div>Nichecom: <input type="text" style="border-bottom:1px solid #000"></div>
-            <div>Manager: <input type="text" style="border-bottom:1px solid #000"></div>
+            <div>Date: <input type="date" class="auto-date" style="border-bottom:1px solid #000"></div>
         </div>
+        <div>Manager: <input type="text" style="border-bottom:1px solid #000; width: 300px;"></div>
 
         <br>
         <p><em>Mark damage on the diagram below:</em></p>
@@ -301,24 +251,30 @@
             <tr>
                 <td><strong>Infotainment System Working?</strong></td>
                 <td>
-                   <label><input type="radio" name="info" value="yes"> Yes</label>
-                   <label><input type="radio" name="info" value="no"> No</label>
+                   <div class="radio-group">
+                       <label><input type="radio" name="info" value="yes"> Yes</label>
+                       <label><input type="radio" name="info" value="no"> No</label>
+                   </div>
                 </td>
                 <td>Comment: <input type="text"></td>
             </tr>
             <tr>
                 <td><strong>Warning Lights (Red)</strong></td>
                 <td>
-                   <label><input type="radio" name="warn_red" value="yes"> Yes</label>
-                   <label><input type="radio" name="warn_red" value="no"> No</label>
+                   <div class="radio-group">
+                       <label><input type="radio" name="warn_red" value="yes"> Yes</label>
+                       <label><input type="radio" name="warn_red" value="no"> No</label>
+                   </div>
                 </td>
                 <td>Comment: <input type="text"></td>
             </tr>
             <tr>
                 <td><strong>Warning Lights (Amber)</strong></td>
                 <td>
-                   <label><input type="radio" name="warn_amber" value="yes"> Yes</label>
-                   <label><input type="radio" name="warn_amber" value="no"> No</label>
+                   <div class="radio-group">
+                       <label><input type="radio" name="warn_amber" value="yes"> Yes</label>
+                       <label><input type="radio" name="warn_amber" value="no"> No</label>
+                   </div>
                 </td>
                 <td>Comment: <input type="text"></td>
             </tr>
@@ -332,22 +288,23 @@
         <p><strong>Bodywork Comments:</strong> <input type="text" style="width:100%; border-bottom:1px solid black"></p>
         
         <h3>External / Safety Checks</h3>
+        <p style="margin-top:-10px; font-style:italic;">Checked?</p>
         <table>
             <tr>
                 <th>Item</th>
-                <th>Checked</th>
-                <th>Yes</th>
-                <th>No / NA</th>
+                <th class="col-radio">Yes</th>
+                <th class="col-radio">No</th>
+                <th class="col-radio">N/A</th>
                 <th>Action Required/Taken</th>
             </tr>
-            <tr><td>Windscreen / Glass</td><td><input type="checkbox"></td><td><input type="radio" name="wind"></td><td><input type="radio" name="wind"></td><td><input type="text"></td></tr>
-            <tr><td>Lights / Indicators</td><td><input type="checkbox"></td><td><input type="radio" name="light"></td><td><input type="radio" name="light"></td><td><input type="text"></td></tr>
-            <tr><td>Mirrors</td><td><input type="checkbox"></td><td><input type="radio" name="mirr"></td><td><input type="radio" name="mirr"></td><td><input type="text"></td></tr>
-            <tr><td>Number Plates</td><td><input type="checkbox"></td><td><input type="radio" name="plate"></td><td><input type="radio" name="plate"></td><td><input type="text"></td></tr>
-            <tr><td>Tyres (1.6mm legal)</td><td><input type="checkbox"></td><td><input type="radio" name="tyre"></td><td><input type="radio" name="tyre"></td><td><input type="text"></td></tr>
-            <tr><td>Locking Wheel Nut</td><td><input type="checkbox"></td><td><input type="radio" name="nut"></td><td><input type="radio" name="nut"></td><td><input type="text"></td></tr>
-            <tr><td>Spare Wheel</td><td><input type="checkbox"></td><td><input type="radio" name="spare"></td><td><input type="radio" name="spare"></td><td><input type="text"></td></tr>
-            <tr><td>Charging Cables</td><td><input type="checkbox"></td><td><input type="radio" name="cable"></td><td><input type="radio" name="cable"></td><td><input type="text"></td></tr>
+            <tr><td>Windscreen / Glass</td><td align="center"><input type="radio" name="wind" value="y"></td><td align="center"><input type="radio" name="wind" value="n"></td><td align="center"><input type="radio" name="wind" value="na"></td><td><input type="text"></td></tr>
+            <tr><td>Lights / Indicators</td><td align="center"><input type="radio" name="light" value="y"></td><td align="center"><input type="radio" name="light" value="n"></td><td align="center"><input type="radio" name="light" value="na"></td><td><input type="text"></td></tr>
+            <tr><td>Mirrors</td><td align="center"><input type="radio" name="mirr" value="y"></td><td align="center"><input type="radio" name="mirr" value="n"></td><td align="center"><input type="radio" name="mirr" value="na"></td><td><input type="text"></td></tr>
+            <tr><td>Number Plates</td><td align="center"><input type="radio" name="plate" value="y"></td><td align="center"><input type="radio" name="plate" value="n"></td><td align="center"><input type="radio" name="plate" value="na"></td><td><input type="text"></td></tr>
+            <tr><td>Tyres (1.6mm legal)</td><td align="center"><input type="radio" name="tyre" value="y"></td><td align="center"><input type="radio" name="tyre" value="n"></td><td align="center"><input type="radio" name="tyre" value="na"></td><td><input type="text"></td></tr>
+            <tr><td>Locking Wheel Nut</td><td align="center"><input type="radio" name="nut" value="y"></td><td align="center"><input type="radio" name="nut" value="n"></td><td align="center"><input type="radio" name="nut" value="na"></td><td><input type="text"></td></tr>
+            <tr><td>Spare Wheel</td><td align="center"><input type="radio" name="spare" value="y"></td><td align="center"><input type="radio" name="spare" value="n"></td><td align="center"><input type="radio" name="spare" value="na"></td><td><input type="text"></td></tr>
+            <tr><td>Charging Cables</td><td align="center"><input type="radio" name="cable" value="y"></td><td align="center"><input type="radio" name="cable" value="n"></td><td align="center"><input type="radio" name="cable" value="na"></td><td><input type="text"></td></tr>
         </table>
 
         <div class="grid-2">
@@ -370,6 +327,14 @@
 </div>
 
 <script>
+    // --- 0. PRE-POPULATE DATES ---
+    function setDates() {
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('.auto-date').forEach(input => {
+            input.value = today;
+        });
+    }
+
     // --- 1. TAB LOGIC ---
     function switchTab(tabId, btnElement) {
         document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
@@ -377,48 +342,74 @@
         document.getElementById(tabId).classList.add('active');
         btnElement.classList.add('active');
         
-        // Resize canvases when tab becomes visible (needed for correct coordinate mapping)
-        resizeCanvases();
+        // FIX: Force resize of canvases in the newly visible tab to prevent 0-width bug
+        // setTimeout ensures rendering is complete before measuring
+        setTimeout(() => resizeActiveTabCanvases(tabId), 10);
+    }
+
+    function resizeActiveTabCanvases(tabId) {
+        const activeContent = document.getElementById(tabId);
+        const canvases = activeContent.querySelectorAll('canvas');
+        
+        canvases.forEach(canvas => {
+            // 1. Signature Pads
+            if (canvas.classList.contains('sig-pad')) {
+                const id = canvas.id;
+                const pad = sigPads[id];
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                
+                // Only resize if visual size > 0 and mismatch exists
+                if (canvas.offsetWidth > 0 && canvas.width !== canvas.offsetWidth * ratio) {
+                    const data = pad.toData(); // Save signature data
+                    canvas.width = canvas.offsetWidth * ratio;
+                    canvas.height = canvas.offsetHeight * ratio;
+                    canvas.getContext("2d").scale(ratio, ratio);
+                    pad.fromData(data); // Restore signature data
+                }
+            } 
+            // 2. Car Canvas
+            else if (canvas.id === 'carCanvas') {
+                if (canvas.offsetWidth > 0 && canvas.width !== canvas.offsetWidth) {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    // Reset context styles after resize as they are cleared
+                    carCtx.strokeStyle = "red";
+                    carCtx.lineWidth = 3;
+                }
+            }
+        });
     }
 
     // --- 2. SIGNATURE PADS ---
     const sigPads = {};
     const canvasIds = ['sig-manager-kit', 'sig-photo-kit', 'sig-driver-car', 'sig-manager-car'];
     
-    // Initialize Signature Pads
     window.onload = function() {
+        setDates(); 
+
+        // Init Signatures
         canvasIds.forEach(id => {
             const canvas = document.getElementById(id);
-            // Handle high DPI screens
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            // Note: Offsets might be 0 here for hidden tabs, fixed by switchTab logic later
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
-            
             sigPads[id] = new SignaturePad(canvas);
         });
         
         initCarCanvas();
     };
 
-    function clearSig(id) {
-        sigPads[id].clear();
-    }
+    function clearSig(id) { sigPads[id].clear(); }
     
-    function resizeCanvases() {
-        // Re-adjust canvas dimensions if tab switch messes them up
-        canvasIds.forEach(id => {
-            const canvas = document.getElementById(id);
-            // Optional: retain data during resize if needed, simpler to just re-init dimensions
-        });
-    }
-
     // --- 3. CAR DIAGRAM DRAWING ---
     let carCanvas, carCtx;
     
     function initCarCanvas() {
         const container = document.querySelector('.car-canvas-container');
         carCanvas = document.getElementById('carCanvas');
+        // Initial sizing (might be 0 if hidden)
         carCanvas.width = container.offsetWidth;
         carCanvas.height = container.offsetHeight;
         carCtx = carCanvas.getContext('2d');
@@ -426,39 +417,50 @@
         carCtx.strokeStyle = "red";
         carCtx.lineWidth = 3;
         
-        let isDrawing = false;
-
-        // Touch Events for iPad
-        carCanvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            isDrawing = true;
+        // DRAWING LOGIC FOR TOUCH & MOUSE
+        function startDraw(e) {
+            e.preventDefault(); 
             const rect = carCanvas.getBoundingClientRect();
+            let x, y;
+            if (e.touches) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.offsetX;
+                y = e.offsetY;
+            }
             carCtx.beginPath();
-            carCtx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-        }, {passive: false});
+            carCtx.moveTo(x, y);
+            carCanvas.isDrawing = true;
+        }
 
-        carCanvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (!isDrawing) return;
+        function moveDraw(e) {
+            if (!carCanvas.isDrawing) return;
+            e.preventDefault(); 
             const rect = carCanvas.getBoundingClientRect();
-            carCtx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+            let x, y;
+            if (e.touches) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.offsetX;
+                y = e.offsetY;
+            }
+            carCtx.lineTo(x, y);
             carCtx.stroke();
-        }, {passive: false});
+        }
 
-        carCanvas.addEventListener('touchend', () => isDrawing = false);
+        function endDraw(e) {
+            carCanvas.isDrawing = false;
+        }
 
-        // Mouse Events for Desktop testing
-        carCanvas.addEventListener('mousedown', (e) => {
-            isDrawing = true;
-            carCtx.beginPath();
-            carCtx.moveTo(e.offsetX, e.offsetY);
-        });
-        carCanvas.addEventListener('mousemove', (e) => {
-            if (!isDrawing) return;
-            carCtx.lineTo(e.offsetX, e.offsetY);
-            carCtx.stroke();
-        });
-        carCanvas.addEventListener('mouseup', () => isDrawing = false);
+        carCanvas.addEventListener('mousedown', startDraw);
+        carCanvas.addEventListener('mousemove', moveDraw);
+        carCanvas.addEventListener('mouseup', endDraw);
+        
+        carCanvas.addEventListener('touchstart', startDraw, {passive: false});
+        carCanvas.addEventListener('touchmove', moveDraw, {passive: false});
+        carCanvas.addEventListener('touchend', endDraw);
     }
 
     function clearCarCanvas() {
@@ -467,34 +469,17 @@
 
     // --- 4. PDF GENERATION ---
     function generatePDF() {
-        // Determine which tab is active to name the file correctly
         const activeTab = document.querySelector('.tab-content.active');
         const filename = activeTab.id === 'kit' ? 'Kit_Handover_Checklist.pdf' : 'Car_Inspection_Sheet.pdf';
-
-        const element = document.getElementById('printableArea');
-        
-        // Hide the non-active tab content temporarily for clean PDF
-        const kitTab = document.getElementById('kit');
-        const carTab = document.getElementById('car');
-        
-        // We only want to print the visible tab.
-        // Save current display states
-        const originalKitDisplay = kitTab.style.display;
-        const originalCarDisplay = carTab.style.display;
-
-        // Force only the active one to show (html2pdf captures the DOM element)
-        // Note: html2pdf captures 'element', so we pass the specific tab div, not the whole container
-        const targetElement = activeTab.id === 'kit' ? kitTab : carTab;
+        const targetElement = activeTab.id === 'kit' ? document.getElementById('kit') : document.getElementById('car');
 
         const opt = {
             margin:       0.2,
             filename:     filename,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
+            html2canvas:  { scale: 2, useCORS: true },
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
-
-        // Generate PDF
         html2pdf().set(opt).from(targetElement).save();
     }
 </script>
