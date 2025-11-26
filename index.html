@@ -54,6 +54,9 @@
         input, select, textarea {
             width: 95%; padding: 4px; border: none; background: transparent; font-family: inherit; font-size: 14px;
         }
+        /* iOS Input Fix */
+        input[type="radio"] { margin: 0; }
+
         input:focus, textarea:focus { background-color: #eef; outline: none; }
         .uppercase { text-transform: uppercase; }
         .bordered-input { border: 1px solid #ccc !important; background: #fff; padding: 5px; border-radius: 3px; }
@@ -62,7 +65,8 @@
         .col-cond { width: 50px; text-align: center; }
         .col-radio { width: 40px; text-align: center; }
         .radio-group { display: flex; align-items: center; gap: 10px; justify-content: flex-start; }
-        .radio-group label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+        /* Added flex-shrink: 0 to prevent text squash on iPad */
+        .radio-group label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
         .car-canvas-container {
             position: relative;
@@ -141,7 +145,6 @@
             width: 100%;
             padding: 10mm 10mm; 
             box-sizing: border-box;
-            /* page-break-after handled specifically per tab below */
         }
 
         /* GENERAL PDF TABLE SPACING */
@@ -192,7 +195,7 @@
     </div>
 
     <div id="kit" class="tab-content active">
-        <h2>Kit Handover Checklist v1</h2>
+        <h2>Kit Handover Checklist v1.1</h2>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
              <div style="font-size:inherit; background:#eee; padding:5px; border:1px solid #ccc;">
                 <strong>Condition Guide:</strong> 1 = Perfect &nbsp;|&nbsp; 5 = Ruined
@@ -308,7 +311,7 @@
     </div>
 
     <div id="car" class="tab-content">
-        <h2>Company Car Check Sheet v1</h2>
+        <h2>Company Car Check Sheet v1.1</h2>
         
         <div class="grid-header">
             <div>Reg: <input type="text" class="uppercase" style="border-bottom:1px solid #000"></div>
@@ -329,9 +332,8 @@
         <h3>Internal Checks</h3>
         <table>
             <tr>
-                <td width="35%"><strong>Infotainment Working?</strong></td>
-                <td width="20%">
-                   <div class="radio-group">
+                <td width="30%"><strong>Infotainment Working?</strong></td>
+                <td width="25%"> <div class="radio-group">
                        <label><input type="radio" name="info" value="yes"> Yes</label>
                        <label><input type="radio" name="info" value="no"> No</label>
                    </div>
@@ -511,7 +513,7 @@
         const element = document.getElementById('mainContainer');
         const opt = {
             margin:       0,
-            filename:     'Kit & Car Inspection Forms.pdf',
+            filename:     'NicheCom_Handover_Packet.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
